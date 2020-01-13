@@ -1,0 +1,7 @@
+# Ignore local configuration setup
+.env
+
+# Ignore locally-mounted `cache` and `logs` directories
+s3cache/
+cache/
+logs/

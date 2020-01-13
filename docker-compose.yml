@@ -1,0 +1,54 @@
+version: '2'
+services:
+    pkgserver:
+        image: juliapackaging/pkgserver.jl
+        user: $UID
+        restart: unless-stopped
+        expose:
+            - 8000
+        volumes:
+            - ./cache:/app/cache
+        environment:
+            PKGSERVER_HOST: "0.0.0.0"
+            PKGSERVER_PORT: "8000"
+            PKGSERVER_STORAGESERVERS: "https://pkg.julialang.org"
+        labels:
+            # Tell watchtower to auto-update this guy
+            com.centurylinklabs.watchtower.enable: true
+    
+    frontend:
+        image: staticfloat/nginx-certbot
+        restart: unless-stopped
+        environment:
+            CERTBOT_EMAIL: $CERTBOT_EMAIL
+            PKG_SERVER_FQDN: $PKG_SERVER_FQDN
+            S3_MIRROR_FQDN: $S3_MIRROR_FQDN
+            ENVSUBST_VARS: PKG_SERVER_FQDN S3_MIRROR_FQDN
+        ports:
+            - 80:80/tcp
+            - 443:443/tcp
+        depends_on:
+            - pkgserver
+        volumes:
+            # Mount in our nginx config
+            - ./pkgserver.nginx.conf:/etc/nginx/user.conf.d/${PKG_SERVER_FQDN}.conf
+            - ./s3mirror.nginx.conf:/etc/nginx/user.conf.d/${S3_MIRROR_FQDN}.conf
+            # Keep SSL certificates permanently
+            - letsencrypt:/etc/letsencrypt
+            # Store logs for us to peruse at our leisure
+            - ./logs/nginx:/logs
+            # Store nginx cache here too
+            - ./s3cache:/nginx_cache
+        labels:
+            com.centurylinklabs.watchtower.enable: true
+
+    # Auto-reload docker containers when their images are updated
+    watchtower:
+        image: containrrr/watchtower
+        volumes:
+            # Mount the docker socket
+            - /var/run/docker.sock:/var/run/docker.sock
+        command: --cleanup --label-enable
+
+volumes:
+    letsencrypt:
