@@ -4,4 +4,5 @@
 # Ignore locally-mounted `cache` and `logs` directories
 s3cache/
 cache/
+storage/
 logs/
