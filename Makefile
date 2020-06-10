@@ -2,12 +2,14 @@
 UID=$(shell id -u)
 export UID
 
-up: storage logs/nginx
+up: storage logs/nginx logs/pkgserver
 	docker-compose up --build --remove-orphans -d
 
 storage:
 	mkdir -p $@
 logs/nginx:
+	mkdir -p $@
+logs/pkgserver:
 	mkdir -p $@
 
 logs:
