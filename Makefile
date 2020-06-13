@@ -2,7 +2,10 @@
 UID=$(shell id -u)
 export UID
 
-up: storage logs/nginx logs/pkgserver
+mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
+current_dir := $(dir $(mkfile_path))
+
+up: storage logs/nginx logs/pkgserver /etc/logrotate.d/pkgserver
 	docker-compose up --build --remove-orphans -d
 
 storage:
@@ -12,12 +15,19 @@ logs/nginx:
 logs/pkgserver:
 	mkdir -p $@
 
+/etc/logrotate.d/pkgserver: logrotate.conf
+	LOGDIR=$(current_dir)logs SOURCEDIR=$(current_dir) envsubst < $< | sudo tee $@ >/dev/null
+
 logs:
-	docker-compose logs -f --tail=200
-.PHONY: logs
+	tail -f logs/nginx/*.log logs/pkgserver/*.log
+
+log_post_rotate_nginx:
+	docker-compose exec frontend /bin/bash -c "killall -USR1 nginx"
 
 down:
 	docker-compose down --remove-orphans
 
 destroy:
 	docker-compose down -v --remove-orphans
+
+.PHONY: logs log_post_rotate down destroy
