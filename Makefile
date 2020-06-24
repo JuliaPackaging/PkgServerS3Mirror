@@ -5,12 +5,12 @@ export UID
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 current_dir := $(dir $(mkfile_path))
 
-# Automatically enable docker on restart
-enable-docker:
-	[[ -n $(which systemctl 2>/dev/null) ]] && sudo systemctl enable docker
-
 up: storage logs/nginx logs/pkgserver /etc/logrotate.d/pkgserver enable-docker
 	docker-compose up --build --remove-orphans -d
+
+# Automatically enable docker on restart
+enable-docker:
+	-[ -n $(shell which systemctl 2>/dev/null) ] && sudo systemctl enable docker
 
 storage:
 	mkdir -p $@
