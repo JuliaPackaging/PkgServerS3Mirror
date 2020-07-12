@@ -1,4 +1,4 @@
-version: '2'
+version: '2.3'
 services:
     pkgserver:
         image: juliapackaging/pkgserver.jl
@@ -18,6 +18,12 @@ services:
         labels:
             # Tell watchtower to auto-update this guy
             com.centurylinklabs.watchtower.enable: true
+        healthcheck:
+            test: curl -f http://localhost:8000/meta || exit 1
+            interval: 2m
+            timeout: 10s
+            retries: 3
+            start_period: 1m
     
     frontend:
         image: staticfloat/nginx-certbot
