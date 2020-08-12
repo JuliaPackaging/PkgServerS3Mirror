@@ -16,8 +16,10 @@ storage:
 	mkdir -p $@
 logs/nginx:
 	mkdir -p $@
+	chmod 755 $@
 logs/pkgserver:
 	mkdir -p $@
+	chmod 755 $@
 
 /etc/logrotate.d/pkgserver: logrotate.conf
 	LOGDIR=$(current_dir)logs SOURCEDIR=$(current_dir) envsubst < $< | sudo tee $@ >/dev/null
