@@ -1,6 +1,6 @@
 version: '2.3'
 services:
-    pkgserver:
+    pkgserver1:
         image: juliapackaging/pkgserver.jl
         user: $UID
         restart: unless-stopped
@@ -8,14 +8,42 @@ services:
             - 8000
         volumes:
             - ./storage:/app/storage
+            - /app/storage/temp
             - ./logs/pkgserver:/app/logs
         environment:
             JULIA_PKG_SERVER: "0.0.0.0:8000"
             JULIA_PKG_SERVER_STORAGE_ROOT: "/app/storage"
             JULIA_PKG_SERVER_LOGS_DIR: "/app/logs"
             JULIA_PKG_SERVER_FQDN: $PKG_SERVER_FQDN
-        # Limit the container to 1.25GB of RAM usage.
-        mem_limit: 1342177280
+        # Limit the container to 0.6GB of RAM usage.
+        mem_limit: 644245094
+        labels:
+            # Tell watchtower to auto-update this guy
+            com.centurylinklabs.watchtower.enable: true
+        healthcheck:
+            test: curl -f http://localhost:8000/meta || exit 1
+            interval: 2m
+            timeout: 10s
+            retries: 3
+            start_period: 1m
+    
+    pkgserver2:
+        image: juliapackaging/pkgserver.jl
+        user: $UID
+        restart: unless-stopped
+        expose:
+            - 8000
+        volumes:
+            - ./storage:/app/storage
+            - /app/storage/temp
+            - ./logs/pkgserver:/app/logs
+        environment:
+            JULIA_PKG_SERVER: "0.0.0.0:8000"
+            JULIA_PKG_SERVER_STORAGE_ROOT: "/app/storage"
+            JULIA_PKG_SERVER_LOGS_DIR: "/app/logs"
+            JULIA_PKG_SERVER_FQDN: $PKG_SERVER_FQDN
+        # Limit the container to 0.6GB of RAM usage.
+        mem_limit: 644245094
         labels:
             # Tell watchtower to auto-update this guy
             com.centurylinklabs.watchtower.enable: true
@@ -38,7 +66,8 @@ services:
             - 80:80/tcp
             - 443:443/tcp
         depends_on:
-            - pkgserver
+            - pkgserver1
+            - pkgserver2
         volumes:
             # Mount in our nginx config
             - ./pkgserver.nginx.conf:/etc/nginx/user.conf.d/${PKG_SERVER_FQDN}.conf
