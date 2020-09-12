@@ -15,6 +15,7 @@ services:
             JULIA_PKG_SERVER_STORAGE_ROOT: "/app/storage"
             JULIA_PKG_SERVER_LOGS_DIR: "/app/logs"
             JULIA_PKG_SERVER_FQDN: $PKG_SERVER_FQDN
+            JULIA_PKG_SERVER_STORAGE_SERVERS: $STORAGE_SERVERS
         # Limit the container to 0.6GB of RAM usage.
         mem_limit: 644245094
         labels:
@@ -42,6 +43,7 @@ services:
             JULIA_PKG_SERVER_STORAGE_ROOT: "/app/storage"
             JULIA_PKG_SERVER_LOGS_DIR: "/app/logs"
             JULIA_PKG_SERVER_FQDN: $PKG_SERVER_FQDN
+            JULIA_PKG_SERVER_STORAGE_SERVERS: $STORAGE_SERVERS
         # Limit the container to 0.6GB of RAM usage.
         mem_limit: 644245094
         labels:
