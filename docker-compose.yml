@@ -17,7 +17,7 @@ services:
             JULIA_PKG_SERVER_FQDN: $PKG_SERVER_FQDN
             JULIA_PKG_SERVER_STORAGE_SERVERS: $STORAGE_SERVERS
         # Limit the container to 0.6GB of RAM usage.
-        mem_limit: 644245094
+        mem_limit: "644245094"
         labels:
             # Tell watchtower to auto-update this guy
             com.centurylinklabs.watchtower.enable: true
@@ -45,7 +45,7 @@ services:
             JULIA_PKG_SERVER_FQDN: $PKG_SERVER_FQDN
             JULIA_PKG_SERVER_STORAGE_SERVERS: $STORAGE_SERVERS
         # Limit the container to 0.6GB of RAM usage.
-        mem_limit: 644245094
+        mem_limit: "644245094"
         labels:
             # Tell watchtower to auto-update this guy
             com.centurylinklabs.watchtower.enable: true
