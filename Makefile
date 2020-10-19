@@ -30,8 +30,8 @@ logs/pkgserver:
 logs:
 	tail -f logs/nginx/*.log logs/pkgserver/*.log
 
-log_post_rotate_nginx:
-	docker-compose exec frontend /bin/bash -c "killall -USR1 nginx"
+reload:
+	sudo kill -HUP $(pgrep -f 'nginx: master')
 
 down:
 	docker-compose down --remove-orphans
