@@ -5,17 +5,17 @@ export UID
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 current_dir := $(dir $(mkfile_path))
 
-up: storage logs/nginx logs/pkgserver /etc/logrotate.d/pkgserver enable-docker
+up: storage/temp1 storage/temp2 logs/nginx logs/pkgserver /etc/logrotate.d/pkgserver enable-docker
 	docker-compose up --build --remove-orphans -d
 	# fix some permissions issues
-	docker-compose exec --user root pkgserver1 /bin/bash -c "chown ${UID}:root /app/storage/temp"
-	docker-compose exec --user root pkgserver2 /bin/bash -c "chown ${UID}:root /app/storage/temp"
+	#docker-compose exec --user root pkgserver1 /bin/bash -c "chown ${UID}:root /app/storage/temp"
+	#docker-compose exec --user root pkgserver2 /bin/bash -c "chown ${UID}:root /app/storage/temp"
 
 # Automatically enable docker on restart
 enable-docker:
 	-[ -n $(shell which systemctl 2>/dev/null) ] && sudo systemctl enable docker
 
-storage:
+storage/temp1 storage/temp2:
 	mkdir -p $@
 logs/nginx:
 	mkdir -p $@
