@@ -31,7 +31,7 @@ logs:
 	tail -f logs/nginx/*.log logs/pkgserver/*.log
 
 reload:
-	sudo kill -HUP $(pgrep -f 'nginx: master')
+	sudo kill -HUP $$(pgrep -f 'nginx: master')
 
 down:
 	docker-compose down --remove-orphans
